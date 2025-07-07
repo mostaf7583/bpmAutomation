@@ -1,0 +1,26 @@
+---
+- name: OpenKM installation
+  gather_facts: false
+  hosts: server3
+  vars:
+    java_cert_path: /usr/lib/jvm/java-8-openjdk-amd64/jre/lib/security/cacerts
+    cert_alias: keycloack
+    cert_file: /etc/ssl/keycloak.key.pem
+    cert_password: changeit
+  tasks:
+    - name: Install required packages
+      apt:
+        name:
+          - unzip
+          - lnav
+          - ranger
+          - openjdk-8-jdk
+        state: present
+        update_cache: yes
+    - name: Import certificate into Java cacerts if not present
+      command: >
+        keytool -import -trustcacerts -noprompt
+        -alias {{ cert_alias }}
+        -file {{ cert_file }}
+        -keystore {{ java_cert_path }}
+        -storepass {{ cert_password }}

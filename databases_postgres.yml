@@ -1,0 +1,40 @@
+- name: Install PostgreSQL and create databases
+  hosts: server3
+  become: true
+  vars:
+    postgres_user: postgres
+    postgres_password: postgres  # Optional, used if needed by your setup
+    databases:
+      - jbpm
+      - gh-bpm-applications
+      - gh-bpm-localization
+
+  tasks:
+    - name: Install PostgreSQL
+      apt:
+        name:
+          - python3-psycopg2  # required for Ansible to work with PostgreSQL
+          - postgresql
+        state: present
+        update_cache: yes
+
+    - name: Ensure PostgreSQL is started and enabled
+      systemd:
+        name: postgresql
+        enabled: yes
+        state: started
+
+    - name: Create databases
+      become_user: postgres
+      postgresql_db:
+        name: "{{ item }}"
+        encoding: UTF8
+        lc_collate: en_US.UTF-8
+        lc_ctype: en_US.UTF-8
+        state: present
+      loop: "{{ databases }}"
+    - name: Set password for postgres user
+      become_user: postgres
+      postgresql_user:
+        name: postgres
+        password: "{{ postgres_password }}"

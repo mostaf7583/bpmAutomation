@@ -1,0 +1,64 @@
+---
+- name: bpm installation
+  gather_facts: false
+  hosts: server3
+  vars:
+    java_cert_path: /usr/lib/jvm/java-8-openjdk-amd64/jre/lib/security/cacerts
+    cert_alias: keycloak
+    cert_file: /etc/ssl/keycloak.key.pem
+    cert_password: changeit
+    activemq_version: "apache-activemq-6.1.6"
+    activemq_url: "https://www.apache.org/dyn/closer.cgi?filename=/activemq/6.1.6/{{activemq_version}}-bin.tar.gz&action=download"
+
+    install_dir: "/root"
+    activemq_home: "/opt/apache-activemq-{{ activemq_version }}"
+  tasks:
+    - name: Install required packages
+      apt:
+        name:
+          - unzip
+          - lnav
+          - ranger
+          - wget
+          - tar
+          - openjdk-8-jdk
+        state: present
+        update_cache: yes
+    - name: Download ActiveMQ
+      get_url:
+        url: "{{ activemq_url }}"
+        dest: "/tmp/apache-activemq-{{ activemq_version }}-bin.tar.gz"
+        mode: '0644'
+
+    - name: Extract ActiveMQ
+      unarchive:
+        src: "/tmp/apache-activemq-{{ activemq_version }}-bin.tar.gz"
+        dest: "{{ install_dir }}"
+        remote_src: yes
+    - name: Create ActiveMQ systemd service
+      copy:
+          dest: /etc/systemd/system/activemq.service
+          content: |
+            [Unit]
+            Description=Apache ActiveMQ
+            After=network.target
+            
+            [Service]
+            Type=forking
+            ExecStart=/root/{{activemq_version}}/bin/activemq start
+            ExecStop=/root/{{activemq_version}}/bin/activemq stop
+            Restart=on-failure
+            User=root
+            Group=root
+            
+            [Install]
+            WantedBy=multi-user.target
+      notify:
+          - Reload systemd
+    - name: Enable and start ActiveMQ
+      systemd:
+          name: activemq
+          enabled: yes
+          state: started
+
+
