@@ -48,7 +48,7 @@
         daemon_reload: yes
     - name: Set Keycloak configuration options in keycloak.conf
       lineinfile:
-        path: /root/keycloak/conf/keycloak-21.1.2.conf
+        path: /root/keycloak-21.1.2/conf/keycloak.conf
         regexp: "^{{ item.key }}="
         line: "{{ item.key }}={{ item.value }}"
         create: yes
