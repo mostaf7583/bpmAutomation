@@ -1,5 +1,5 @@
 ---
-- name: bpm installation
+- name: activemq installation
   gather_facts: false
   hosts: server3
   vars:

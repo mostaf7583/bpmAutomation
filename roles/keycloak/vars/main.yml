@@ -1,0 +1,9 @@
+keycloak_config:
+  - { key: 'http-port', value: '8180' }
+  - { key: 'https-port', value: '8444' }
+  - { key: 'https-certificate-file', value: 'etc/ssl/keycloak.crt.pem' }
+  - { key: 'https-certificate-key-file', value: 'etc/ssl/keycloak.key.pem' }
+  - { key: 'hostname', value: '{{ ansible_default_ipv4.address }}' }
+  - { key: 'https-enabled', value: 'true' }
+  - { key: 'http-enabled', value: 'true' }
+  - { key: 'proxy', value: 'edge' }
