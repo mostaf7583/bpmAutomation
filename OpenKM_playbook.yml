@@ -5,7 +5,7 @@
   vars:
     java_cert_path: /usr/lib/jvm/java-8-openjdk-amd64/jre/lib/security/cacerts
     cert_alias: keycloack
-    cert_file: /etc/ssl/keycloak.key.pem
+    cert_file: /etc/ssl/keycloak.crt.pem
     cert_password: changeit
   tasks:
     - name: Install required packages
