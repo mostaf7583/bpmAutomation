@@ -1,0 +1,57 @@
+---
+    - name: Install Java verion 11.0.15 jdk 
+      ansible.builtin.debug:
+        msg: "Installing Java version {{ java_version }} from {{ java_download_url }}"
+    - name: Download Java archive
+      get_url:
+        url: "{{ java_download_url }}"
+        dest: "/tmp/{{ java_archive_name }}"   
+
+    - name: Extract Java
+      unarchive:
+        src: "/tmp/{{ java_archive_name }}"
+        dest: "{{ java_install_dir }}"
+        remote_src: yes
+    - name: copy the zip file  bpm from the local machine to the remote server
+      copy:
+        src: "{{ bpm_install_zip }}"
+        dest: "/root/"
+        mode: "0755"
+    - name: Unzip BPM
+      unarchive:
+        src: "/root/newBpm.zip"
+        dest: "/root/"
+        remote_src: yes
+    - name: Deploy customized standalone.conf
+      template:
+      src: standalone.conf.j2
+      dest: /root/newBpm/bin/standalone.conf
+      mode: '0755'
+    - name: Deploy customized standalone.xml
+      
+      
+    - name: Create systemd service file for BPM
+      copy:
+        dest: /etc/systemd/system/jbpm.service
+        content: |
+          [Unit]
+          Description=BPM Service
+          After=network.target
+
+          [Service]
+          Type=simple
+          User=root
+          ExecStart=/root/newBpm/bin/standalone.sh -b 0.0.0.0
+          Restart=on-failure
+
+          [Install]
+          WantedBy=multi-user.target
+    - name: Reload systemd
+      systemd:
+        daemon_reload: yes
+    - name: Enable and start BPM
+      systemd:
+        name: jbpm
+        enabled: yes
+        state: started
+

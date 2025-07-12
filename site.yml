@@ -1,6 +1,13 @@
 ---
-- name: Setup Keycloak
-  hosts: keyclock
+# - name: Setup Keycloak
+#   hosts: keyclock
+#   become: true
+#   roles:
+#     - keycloak
+- name: Setup BPM Servers
+  hosts: bpm_servers
   become: true
   roles:
-    - keycloak
+    - bpm
+
+  
