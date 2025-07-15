@@ -4,10 +4,13 @@
 #   become: true
 #   roles:
 #     - keycloak
-- name: Setup BPM Servers
-  hosts: bpm_servers
-  become: true
+#- name: Setup BPM Servers
+#  hosts: bpm_servers
+#  become: true
+#  roles:
+#    - bpm
+- name : installing  nginx
+  hosts:  nginx
   roles:
-    - bpm
-
+    - nginx
   

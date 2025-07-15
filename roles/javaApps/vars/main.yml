@@ -1,0 +1,9 @@
+vars:
+  base_dir: "/root/java-apps"
+  bpm_dir: "/root/java-apps/bpm-application"
+  localization_dir: "/root/java-apps/localization"
+  qlistener_dir: "/root/java-apps/QListener"
+  repos:
+    - { name: "bpm-application", url: "https://bitbucket.org/your_user/bpm-application.git" }
+    - { name: "localization", url: "https://bitbucket.org/your_user/localization.git" }
+    - { name: "qlistener", url: "https://bitbucket.org/your_user/qlistener.git" }

@@ -1,9 +1,10 @@
 - name: Install PostgreSQL and create databases
-  hosts: server1
+  hosts: database
+
   become: true
   vars:
     postgres_user: postgres
-    postgres_password: postgres  # Optional, used if needed by your setup
+    postgres_password: postgres
     databases:
       - jbpm
       - gh-bpm-applications
@@ -13,7 +14,7 @@
     - name: Install PostgreSQL
       apt:
         name:
-          - python3-psycopg2  # required for Ansible to work with PostgreSQL
+          - python3-psycopg2
           - postgresql
         state: present
         update_cache: yes
