@@ -71,7 +71,6 @@
         state: present
       notify: Restart PostgreSQL
 
-
     - name: Allow PostgreSQL to listen on all interfaces
       become: true
       lineinfile:
