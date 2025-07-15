@@ -9,6 +9,13 @@
       - jbpm
       - gh-bpm-applications
       - gh-bpm-localization
+  handlers:
+    - name: Restart PostgreSQL
+      become: true
+      service:
+        name: postgresql
+        state: restarted
+
 
   tasks:
     - name: Install PostgreSQL
@@ -40,3 +47,36 @@
       postgresql_user:
         name: postgres
         password: "{{ postgres_password }}"
+    - name: Get installed PostgreSQL version
+      shell: "psql -V | awk '{print $3}' | cut -d. -f1"
+      become_user: postgres
+      register: postgres_version
+
+    - name: Set PostgreSQL config path
+      set_fact:
+        pg_conf_path: "/etc/postgresql/{{ postgres_version.stdout }}/main"
+    - name: Allow remote access in pg_hba.conf
+      become: true
+      lineinfile:
+        path: "{{ pg_conf_path }}/pg_hba.conf"
+        line: "host    all             all             192.168.2.0/24           md5"
+        state: present
+        insertafter: EOF
+      notify: Restart PostgreSQL
+    - name: Allow password auth for local postgres user
+      lineinfile:
+        path: "{{ pg_conf_path }}/pg_hba.conf"
+        regexp: '^local\s+all\s+postgres\s+peer'
+        line: 'local   all             postgres                                md5'
+        state: present
+      notify: Restart PostgreSQL
+
+
+    - name: Allow PostgreSQL to listen on all interfaces
+      become: true
+      lineinfile:
+        path: "{{ pg_conf_path }}/postgresql.conf"
+        regexp: '^#?listen_addresses\s*='
+        line: "listen_addresses = '*'"
+        state: present
+      notify: Restart PostgreSQL
